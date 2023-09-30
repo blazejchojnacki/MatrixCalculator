@@ -251,9 +251,9 @@ def row_permute(matrix, permuted_row_1, permuted_row_2):
         permuted.append([])
         permutation = row_number
         if row_number == permuted_row_1:
-            permutation = permuted_row_2  # permuted[row_number].append(matrix[permuted_row_2])
+            permutation = permuted_row_2
         elif row_number == permuted_row_2:
-            permutation = permuted_row_1  # permuted[row_number].append(matrix[permuted_row_1])
+            permutation = permuted_row_1
         for column_number in range(number_of_columns):
             permuted[row_number].append(matrix[permutation][column_number])
     permuted_matrix = Entries(permuted)
@@ -263,31 +263,18 @@ def row_permute(matrix, permuted_row_1, permuted_row_2):
 def row_scale(matrix, scalar, row):
     """ returns a given matrix where a given rows have been multiplied by a given scalar """
     number_of_rows = len(matrix)
-    number_of_columns = len(matrix[0])
     scaled = []
     for row_number in range(number_of_rows):
         if row_number == row:
             scaled.append([entry * scalar for entry in matrix[row_number]])
         else:
-            scaled.append(matrix[row_number])  # [entry for entry in matrix[row_number]])
+            scaled.append(matrix[row_number])
     scaled_matrix = Entries(scaled)
     return scaled_matrix
 
 
 def row_add(matrix, row_modified, added_row_idle):
     """ returns a given matrix where a given row has been added to another given row """
-    # number_of_rows = len(matrix)
-    # number_of_columns = len(matrix[0])
-    # added = []
-    # for row_number in range(number_of_rows):
-    #     added.append([])
-    #     for column_number in range(number_of_columns):
-    #         if row_number == added_row_modified:
-    #             added[row_number].append(matrix[added_row_modified][column_number]
-    #                                      + matrix[added_row_idle][column_number])
-    #         else:
-    #             added[row_number].append(matrix[row_number][column_number])
-    # added_matrix = Entries(added)
     added_matrix = row_add_scaled(matrix, row_modified, 1, added_row_idle)
     return added_matrix
 
@@ -295,8 +282,6 @@ def row_add(matrix, row_modified, added_row_idle):
 def row_subtract(matrix, row_modified, subtracted_row_idle):
     """ returns the given matrix where a given row has been subtracted to another given row """
     result_matrix = row_add_scaled(matrix, row_modified, -1, subtracted_row_idle)
-    # result_matrix = row_add(row_scale(matrix, -1, subtracted_row_idle), row_modified, subtracted_row_idle)
-    # result_matrix = row_scale(matrix, -1, subtracted_row_idle)
     return result_matrix
 
 
@@ -316,17 +301,13 @@ def row_add_scaled(matrix, row_modified, scalar, added_row_idle):
             else:
                 added[row_number].append(matrix[row_number][column_number])
     result_matrix = Entries(added)
-    # result_matrix = row_add(row_scale(matrix, scalar, added_row_idle), row_modified, added_row_idle)
-    # result_matrix = row_scale(result_matrix, 1 / scalar, added_row_idle)
     return result_matrix
 
 
 def row_subtract_scaled(matrix, row_modified, scalar, subtracted_row_idle):
     """ returns the given matrix where a given row has been multiplied by a given scalar
      and subtracted to another given row """
-    result_matrix = row_add_scaled(matrix, row_modified, -1, subtracted_row_idle)
-    # result_matrix = row_subtract(row_scale(matrix, scalar, subtracted_row_idle), row_modified, subtracted_row_idle)
-    # result_matrix = row_scale(result_matrix, 1 / scalar, subtracted_row_idle)
+    result_matrix = row_add_scaled(matrix, row_modified, -1 * scalar, subtracted_row_idle)
     return result_matrix
 
 
