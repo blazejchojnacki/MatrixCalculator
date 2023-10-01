@@ -1,6 +1,20 @@
 import tkinter
 from gui import Matrix_Grid, command_interpreter
 import matrix_operations
+import history_engine
+# def edit_entry()
+step_counter = 1
+
+
+def history_undo():
+    global step_counter, current_command, current_matrix
+
+    # undo_counter += 1
+    undo_matrix = matrix_A_history.undo(step_counter)  # undo_counter)
+    for key in undo_matrix:
+        current_command = key
+        current_matrix = undo_matrix[key]
+    refresh()
 
 
 def refresh():
@@ -12,17 +26,37 @@ def refresh():
             matrix_A_interface[row_number][column_number].config(text=current_matrix[row_number][column_number])
 
 
+def call_interpreter():
+    global step_counter, current_command, current_matrix
+    current_command = command_line.get()
+    try:
+        command_result = command_interpreter(current_command, matrix_a=current_matrix)
+        message_label.config(text="command applied")
+        if type(command_result) is int or type(command_result) is float:
+            determinant_label.config(text=command_result)
+        else:
+            current_matrix = command_result
+            refresh()
+            matrix_A_history.history_append(current_command, current_matrix)
+            step_counter += 1
+    except:
+        message_label.config(text="command unrecognized")
+
+
 def call_operation(operation):
     global current_matrix
     command_line.delete(0, 'end')
     command_line.insert(0, operation)
-    current_matrix = matrix_operations.operation_dict[operation](current_matrix)
-    refresh()
+    call_interpreter()
+    # result = matrix_operations.operation_dict[operation](current_matrix)
+    # if result is not int and result is not float:
+    #     current_matrix = result
+    #     breakpoint()
+    #     refresh()
 
 
 def transpose():
     call_operation("transpose")
-    # current_matrix = matrix
 
 
 def inverse():
@@ -39,26 +73,18 @@ def determine():
 
 
 def mode_change():
-    global mode_radio_grid
-    mode_radio_single_edit.grid(row=mode_radio_grid[0] - 1, column=mode_radio_grid[1], columnspan=2)
+    history_undo()
+    # print(matrix_A_history.history_read())
+    # matrix_operations.read_string(matrix_operations.stringify(m1)).display()
+    # history_engine.history_purge()
     pass
-
-
-def call_interpreter():
-    global current_command, current_matrix
-    current_command = command_line.get()
-    command_result = command_interpreter(current_command, matrix_a=current_matrix)
-    if command_result is int or command_result is float:
-        determinant_label.config(text=command_result)
-    else:
-        current_matrix = command_result
-        refresh()
 
 
 current_command = ""
 
 m1 = matrix_operations.Entries(entries=([1, 2, 1], [3, 4, -1], [5, 6, -2]))
-m2 = matrix_operations.Identity(6)
+matrix_A_history = history_engine.Recaller()
+m2 = matrix_operations.Identity(2)
 current_matrix = m1
 
 window = tkinter.Tk()
@@ -91,10 +117,11 @@ matrix_A_interface = Matrix_Grid(m1, master=container_matrix_A)
 space_label = tkinter.Label(master=container_matrices, text=" ", width=1)
 container_matrix_B = tkinter.Frame(master=container_matrices)
 matrix_B_interface = Matrix_Grid(m2, master=container_matrix_B)
+space_label2 = tkinter.Label(master=container_matrices, text=" ", width=1)
 container_matrix_A.grid(row=1, column=1)
 space_label.grid(row=1, column=2)
 container_matrix_B.grid(row=1, column=3)
-# space_label2 = tkinter.Label(master=container_matrices, text=" ", width=1)
+space_label2.grid(row=1, column=4)
 
 container_operator = tkinter.Frame(width=5, borderwidth=1, relief="solid")
 operator_transpose = tkinter.Button(master=container_operator, text="T", width=5, command=transpose)
@@ -113,6 +140,8 @@ command_line = tkinter.Entry(master=container_command, width=30)
 command_line.grid(row=1, column=1)
 interpret = tkinter.Button(master=container_command, text="enter", command=call_interpreter)
 interpret.grid(row=1, column=2)
+message_label = tkinter.Label(master=container_command, text="type a command and press the enter button")
+message_label.grid(row=2, column=1, columnspan=2)
 
 
 # --- main grid --- #

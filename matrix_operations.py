@@ -108,16 +108,43 @@ class Identity(Entries):
         self.determinant = 1
 
 
-def display(matrix):
-    """ returns a given matrix after printing it to the console """
+def stringify(matrix):
+    """returns the multiline string representing the matrix"""
     number_of_rows = len(matrix)
     number_of_columns = len(matrix[0])
+    string_matrix = ""
     for row_number in range(number_of_rows):
-        line = "|\t"
+        string_matrix += "|\t"
         for column_number in range(number_of_columns):
-            line += f"{matrix[row_number][column_number]}\t"
-        print(f"{line}|")
-    print()
+            string_matrix += f"{matrix[row_number][column_number]}\t"
+        string_matrix += "|\n"
+    string_matrix += "\n"
+    return string_matrix
+
+
+def read_string(string_matrix):
+    string_matrix = string_matrix[0:-2]
+    string_matrix = string_matrix.split("\n")
+    number_of_rows = len(string_matrix)
+    result_matrix = []
+    for row_number in range(number_of_rows):
+        string_matrix[row_number] = string_matrix[row_number].strip("|\t")
+        string_matrix[row_number] = string_matrix[row_number].split("\t")
+        # number_of_columns = len(string_matrix[0])
+        result_matrix.append([float(entry) for entry in string_matrix[row_number]])
+    return Entries(result_matrix)
+
+
+def display(matrix):
+    """ returns a given matrix after printing it to the console """
+    # number_of_rows = len(matrix)
+    # number_of_columns = len(matrix[0])
+    # for row_number in range(number_of_rows):
+    #     line = "|\t"
+    #     for column_number in range(number_of_columns):
+    #         line += f"{matrix[row_number][column_number]}\t"
+    #     print(f"{line}|")
+    print(stringify(matrix))
     return matrix
 
 
@@ -321,4 +348,32 @@ operation_dict = {
     "subtract": subtract,
     "-": subtract,
     "scale": scale,
+}
+
+operation_row_dict = {
+    "add": row_add,
+    "+": row_add,
+    "subtract": row_subtract,
+    "-": row_subtract,
+    "scale": row_scale,
+    "*": row_scale,
+    "x": row_scale,
+}
+
+operation_matrix_dict = {
+    "transpose": transpose,
+    "invert": inverse,
+    "scale": scale,
+    "det": get_determinant,
+    "|": get_determinant,
+}
+
+operation_matrices_dict = {
+    "add": add,
+    "+": add,
+    "subtract": subtract,
+    "-": subtract,
+    "multiply": multiply,
+    "*": multiply,
+    "x": multiply,
 }
