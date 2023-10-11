@@ -4,17 +4,20 @@ import matrix_operations
 import history_engine
 # def edit_entry()
 step_counter = 1
+undo_counter = 1
 
 
 def history_undo():
-    global step_counter, current_command, current_matrix
-
-    # undo_counter += 1
-    undo_matrix = matrix_A_history.undo(step_counter)  # undo_counter)
-    for key in undo_matrix:
-        current_command = key
-        current_matrix = undo_matrix[key]
-    refresh()
+    global step_counter, undo_counter, current_command, current_matrix
+    undo_counter += 1
+    if undo_counter <= step_counter:
+        previous_step = matrix_A_history.undo(undo_counter)
+        current_command = previous_step["command"]
+        current_matrix = previous_step["matrix"]
+        refresh()
+        return
+    undo_counter -= 1
+    print("end of history")
 
 
 def refresh():
@@ -44,7 +47,7 @@ def call_interpreter():
 
 
 def call_operation(operation):
-    global current_matrix
+    # global current_matrix
     command_line.delete(0, 'end')
     command_line.insert(0, operation)
     call_interpreter()
@@ -74,16 +77,21 @@ def determine():
 
 def mode_change():
     history_undo()
+    # global current_command, current_matrix
+    # recall = matrix_A_history.undo(1)
+    # current_command = recall["command"]
+    # current_matrix = recall["matrix"]
+    # refresh()
     # print(matrix_A_history.history_read())
     # matrix_operations.read_string(matrix_operations.stringify(m1)).display()
     # history_engine.history_purge()
     pass
 
 
-current_command = ""
+current_command = "start"
 
 m1 = matrix_operations.Entries(entries=([1, 2, 1], [3, 4, -1], [5, 6, -2]))
-matrix_A_history = history_engine.Recaller()
+matrix_A_history = history_engine.Recaller(initial_matrix=m1)
 m2 = matrix_operations.Identity(2)
 current_matrix = m1
 

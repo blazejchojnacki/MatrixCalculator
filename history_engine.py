@@ -17,12 +17,12 @@ def get_file_index():
 
 
 class Recaller:
-    previous_command = None
-    previous_matrix = None
 
-    def __init__(self):
+    def __init__(self, initial_matrix):
+        # self.init_matrix = initial_matrix
         self.item = get_file_index()
         self.history_open()
+        self.history_append("start", initial_matrix)
 
     def history_open(self):
         with open(f"history/history_{self.item}.txt", mode="w") as history_file:
@@ -35,8 +35,6 @@ class Recaller:
             history_file.write(command)
             history_file.write("\n")
             history_file.write(stringify(matrix))
-        self.previous_command = command
-        self.previous_matrix = matrix
 
     def history_read(self):
         with open(f"history/history_{self.item}.txt") as history_file:
@@ -48,10 +46,10 @@ class Recaller:
                 if line[0] == "\n":
                     if key != "":
                         # matrix_dict = {key: matrix_operations.read_string(matrix_string)}
-                        matrices_dicts.append({key: matrix_operations.read_string(matrix_string)})
+                        matrices_dicts.append({"command": key, "matrix": matrix_operations.read_string(matrix_string),})
                     key = ""
                     matrix_string = ""
-                elif line.strip() in matrix_operations.operation_dict:
+                elif line.strip() in matrix_operations.operation_dict or line.strip() == "start":
                     key = line.strip()
                 elif line[0] == "|":
                     matrix_string += line
@@ -60,14 +58,15 @@ class Recaller:
             return matrices_dicts
 
     def undo(self, step):
-        command_result_dict = {}
-        if self.previous_command is not None and self.previous_matrix is not None:
-            command_result_dict[self.previous_command] = self.previous_matrix
-            return command_result_dict
-        else:
-            history = self.history_read()
-            # self.previous_command
-            return history[step]
+        # command_result_dict = {}
+        # if self.previous_command is not None and self.previous_matrix is not None:
+        #     command_result_dict["command"] = self.previous_command
+        #     command_result_dict["matrix"] = self.previous_matrix
+        #     return command_result_dict
+        # else:
+        history = self.history_read()
+        # breakpoint()
+        return history[-step]
 
 
 def history_purge():
